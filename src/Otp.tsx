@@ -13,10 +13,10 @@ interface OtpProps {
 }
 
 export default function Otp({
-  phone = "+57 316\u25cf\u25cf\u25cf\u25cf\u25cf57",
+  phone = "+57 316●●●●●57",
   step = 1,
   totalSteps = 3,
-  stepLabel = "Validaci\u00f3n de identidad",
+  stepLabel = "Validación de identidad",
   emit,
 }: OtpProps) {
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(""));
@@ -63,11 +63,23 @@ export default function Otp({
     inputRefs.current[0]?.focus();
   }
 
+  const [loading, setLoading] = useState(false);
   const isComplete = digits.every((d) => d !== "");
 
-  function handleVerify() {
-    if (!isComplete) return;
-    emit?.("otp:submit", { code: digits.join("") });
+  async function handleVerify() {
+    if (!isComplete || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch("https://jsonplaceholder.typicode.com/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otp: digits.join("") }),
+      });
+      const data = await res.json();
+      emit?.("otp:submit", { code: digits.join(""), postId: data.id });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -80,7 +92,7 @@ export default function Otp({
           </div>
         </div>
         <nav className="otp-nav">
-          <span>Cr\u00e9dito </span>
+          <span>Crédito </span>
           <span className="otp-nav-highlight">Hipotecario</span>
         </nav>
       </header>
@@ -96,8 +108,13 @@ export default function Otp({
         </div>
       </div>
       <main className="otp-main">
+        {loading && (
+          <div className="otp-overlay">
+            <div className="otp-overlay-spinner" />
+          </div>
+        )}
         <h2 className="otp-title">
-          Ingrese el c\u00f3digo enviado a su correo electr\u00f3nico
+          Ingrese el código enviado a su correo electrónico
           <br />o celular {phone}
         </h2>
         <div className="otp-inputs" onPaste={handlePaste}>
@@ -113,29 +130,29 @@ export default function Otp({
               autoFocus={i === 0}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
-              aria-label={`D\u00edgito ${i + 1} del c\u00f3digo OTP`}
+              aria-label={`Dígito ${i + 1} del código OTP`}
             />
           ))}
         </div>
         <div className="otp-resend">
           {canResend ? (
-            <button className="otp-resend-btn" onClick={handleResend}>Volver a enviar c\u00f3digo</button>
+            <button className="otp-resend-btn" onClick={handleResend}>Volver a enviar código</button>
           ) : (
             <>
-              <span className="otp-resend-text">Volver a enviar c\u00f3digo en</span>
+              <span className="otp-resend-text">Volver a enviar código en</span>
               <span className="otp-resend-countdown">
-                <span className="otp-resend-icon">\u23f1</span>
+                <span className="otp-resend-icon">⏱</span>
                 {countdown} segundos
               </span>
             </>
           )}
         </div>
         <button
-          className={`otp-verify-btn${isComplete ? " otp-verify-btn--active" : ""}`}
-          disabled={!isComplete}
+          className={`otp-verify-btn${isComplete && !loading ? " otp-verify-btn--active" : ""}`}
+          disabled={!isComplete || loading}
           onClick={handleVerify}
         >
-          Verificar
+          {loading ? <><span className="otp-spinner" />Verificando...</> : "Verificar"}
         </button>
       </main>
     </div>

@@ -12,9 +12,7 @@ export default defineConfig({
       formats: ['es'],
       fileName: 'remoteEntry',
     },
-    rollupOptions: {
-      external: ['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client'],
-    },
+    rollupOptions: {},
   },
   server: { port: 3002 },
   preview: {

@@ -1,4 +1,9 @@
 /* ── OTP MF ── */
+@keyframes otp-spin { to { transform: rotate(360deg); } }
+.otp-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: otp-spin 0.65s linear infinite; vertical-align: middle; margin-right: 8px; flex-shrink: 0; }
+.otp-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.6); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.otp-overlay-spinner { width: 36px; height: 36px; border: 3px solid #e0e7ef; border-top-color: #0057a8; border-radius: 50%; animation: otp-spin 0.75s linear infinite; }
+.otp-main { position: relative; }
 .otp-root {
   min-height: 100vh;
   display: flex;
