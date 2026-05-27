@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { manifestPlugin } from '@journals/mf-contract/vite-plugin'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), manifestPlugin()],
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
